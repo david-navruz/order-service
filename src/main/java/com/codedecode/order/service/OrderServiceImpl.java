@@ -4,6 +4,7 @@ import com.codedecode.order.dto.OrderDTO;
 import com.codedecode.order.dto.OrderDTOFromFrontend;
 import com.codedecode.order.dto.UserDTO;
 import com.codedecode.order.entity.Order;
+import com.codedecode.order.mapper.OrderMapper;
 import com.codedecode.order.repo.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,13 +28,13 @@ public class OrderServiceImpl implements OrderService {
         Integer newOrderId = sequenceGenerator.generateNextOrderId();
         UserDTO userDTO = fetchUserDetailsFromUserId(orderDetails.getUserId());
         Order orderToSave = new Order(newOrderId, orderDetails.getFoodItemsList(), orderDetails.getRestaurantDTO(), userDTO);
-        orderRepository.save(orderToSave);
-        return null;
+        Order orderSaved = orderRepository.save(orderToSave);
+        return OrderMapper.INSTANCE.mapOrderToOrderDTO(orderSaved);
     }
 
 
     private UserDTO fetchUserDetailsFromUserId(Integer userId) {
-        return restTemplate.getForObject("http://USER-SERVICE/user/fetchUserById/" + userId, UserDTO.class);
+        return restTemplate.getForObject("http://USER-SERVICE/user/getUserById/" + userId, UserDTO.class);
     }
 
 
